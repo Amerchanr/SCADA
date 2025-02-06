@@ -36,14 +36,15 @@ def Scada():
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
     ventana_SCADA.config(bg='white')
-    
     SCADA_label = tk.Label(ventana_SCADA, text='SCADA', font=("Arial", 20), bg='white', fg='black')
     SCADA_label.place(x=300, y=0)
-    
-    boton_volver = tk.Button(ventana_SCADA, text='Volver', font=("Arial", 12), bg='#000000', fg='white',
+    # Crear el Canvas
+    canvas_botones = tk.Canvas(ventana_SCADA, width=600, height=400, bg="lightblue")
+    canvas_botones.pack(X=500,y=0)
+    boton_volver = tk.Button(ventana_SCADA, text='Volver', font=fuentebotones, bg='#000000', fg='white',
                              relief='raised', command=ventana_SCADA.destroy)
-    boton_volver.place(x=1180, y=20)   
-#funcion ventana de registro
+    canvas_botones.create_window(x=300, y=20,window=boton_volver)   
+#funcion ventana de registro 
 
 def registro():
     ventana_registro=tk.Toplevel(ventana)
@@ -70,6 +71,7 @@ def registro():
         referencia= db.reference(f'usuarios/{texto_usuario}')
         name=caja_texto_usuario.get("1.0", tk.END).strip()
         if referencia.get():
+                text_area.delete("1.0", tk.END) 
                 text_area.insert(tk.END,f'El Usuario {name}, ya se encuentra registrado')
         else:        
             text_area.delete("1.0", tk.END)    
@@ -112,11 +114,13 @@ def inicio_sesion():
         print(contr_usua)
         print(texto_contraseña)
         if (contr_usua== texto_contraseña):
-             
+
              text_area.insert(tk.END,f'Hola {name}, Bienvenido desde la siguiente pestaña podrá observar lo referente a su sistema de alcantalillado')
              def destruir_inicio():
                   ventana_inicio.destroy
-             ventana_inicio.after(100000,destruir_inicio)
+             #ventana_inicio.after(5000,destruir_inicio)
+             #ventana_inicio.destroy
+             #destruir_inicio()
              Scada()
         else:
              text_area.insert(tk.END,f'Hola {name}, el usuario o la contraseñaa estan incorrectos')
