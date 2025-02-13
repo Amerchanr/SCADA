@@ -39,11 +39,17 @@ def Scada():
     SCADA_label = tk.Label(ventana_SCADA, text='SCADA', font=("Arial", 20), bg='white', fg='black')
     SCADA_label.place(x=300, y=0)
     # Crear el Canvas
-    canvas_botones = tk.Canvas(ventana_SCADA, width=600, height=400, bg="lightblue")
-    canvas_botones.pack(X=500,y=0)
-    boton_volver = tk.Button(ventana_SCADA, text='Volver', font=fuentebotones, bg='#000000', fg='white',
-                             relief='raised', command=ventana_SCADA.destroy)
-    canvas_botones.create_window(x=300, y=20,window=boton_volver)   
+    canvas_botones = tk.Canvas(ventana_SCADA, width=300, height=800, bg="lightblue")
+    canvas_botones.place(x=975,y=0)
+    canvas_animacion =tk.Canvas(ventana_SCADA,width=600,height=400,bg='lightblue') 
+    canvas_animacion.place(x=0,y=0)
+    canvas_camptext =tk.Canvas(ventana_SCADA,width=370,height=400,bg='lightblue') 
+    canvas_camptext.place(x=602,y=0)
+    canvas_camptext.create_text(300, 50, text='ADVERTENCIAS', font=("Arial", 16, "bold"), fill="black")
+    canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
+    canvas_graficas.place(x=0,y=400)
+
+
 #funcion ventana de registro 
 
 def registro():
