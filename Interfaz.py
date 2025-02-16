@@ -54,6 +54,10 @@ def Scada():
     canvas_botones.create_window(100,525,window=boton_PaSistem)
     boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
     canvas_botones.create_window(100,650,window=boton_ReiSistema)
+    Titulo_advertencia = tk.Label(ventana_SCADA,text='¡Advertencias!',font=(fuentescada,40),bg='white',fg='red',)
+    Titulo_advertencia.place(x=610,y=55)
+    Titulo_advertencia = tk.Label(ventana_SCADA,text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black',)
+    Titulo_advertencia.place(x=610,y=125)
 
 
 
