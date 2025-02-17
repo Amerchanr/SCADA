@@ -37,39 +37,34 @@ def Scada():
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
     ventana_SCADA.config(bg='white')
-    SCADA_label = tk.Label(ventana_SCADA, text='SCADA', font=("Arial", 20), bg='white', fg='black')
-    SCADA_label.place(x=300, y=0)
+    
     # Crear el Canvas
     canvas_botones = tk.Canvas(ventana_SCADA, width=300, height=800, bg="white")
     canvas_botones.place(x=975,y=0)
-    boton_volver=tk.Button(ventana_SCADA,text='  volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,75,window=boton_volver)
-    boton_historico=tk.Button(ventana_SCADA,text='  Historico ',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,200,window=boton_historico)
-    boton_Parar=tk.Button(ventana_SCADA,text=' Parar Bomba ',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,300,window=boton_Parar)
-    boton_Start=tk.Button(ventana_SCADA,text=' Bomba Start ',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,400,window=boton_Start)
-    boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema  ',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,525,window=boton_PaSistem)
-    boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy)
-    canvas_botones.create_window(100,650,window=boton_ReiSistema)
-
-
-
     canvas_animacion =tk.Canvas(ventana_SCADA,width=600,height=400,bg='lightblue') 
     canvas_animacion.place(x=0,y=0)
-
-
-
     canvas_camptext =tk.Canvas(ventana_SCADA,width=368,height=400,bg='lightblue') 
-    canvas_camptext.pady()
-    
-    Advertencias = tk.Text(ventana_SCADA, height=1, width=30)
-    canvas_camptext.create_window(0,0,window=Advertencias)
-
+    canvas_camptext.place(x=602,y=0)
     canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
     canvas_graficas.place(x=0,y=400)
+
+    #Botones Scada
+    boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,75,window=boton_volver)
+    boton_historico=tk.Button(ventana_SCADA,text='Historico',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,200,window=boton_historico)
+    boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,300,window=boton_Parar)
+    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,400,window=boton_Start)
+    boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,525,window=boton_PaSistem)
+    boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    canvas_botones.create_window(150,650,window=boton_ReiSistema)
+
+
+
+    
 
 
 #funcion ventana de registro 
