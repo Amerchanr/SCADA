@@ -43,7 +43,7 @@ def Scada():
     canvas_botones.place(x=975,y=0)
     canvas_animacion =tk.Canvas(ventana_SCADA,width=600,height=400,bg='lightblue') 
     canvas_animacion.place(x=0,y=0)
-    canvas_camptext =tk.Canvas(ventana_SCADA,width=368,height=400,bg='lightblue') 
+    canvas_camptext =tk.Canvas(ventana_SCADA,width=368,height=400,bg='white') 
     canvas_camptext.place(x=602,y=0)
     canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
     canvas_graficas.place(x=0,y=400)
@@ -61,6 +61,12 @@ def Scada():
     canvas_botones.create_window(150,525,window=boton_PaSistem)
     boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,650,window=boton_ReiSistema)
+    
+    #widgets camp text
+    Advertencia = tk.Label(ventana_SCADA,text='¡Advertencias!',font=(fuentescada,40),bg='white',fg='red',)
+    canvas_camptext.create_window(200,50,window=Advertencia)
+    Titulo_advertencia = tk.Label(ventana_SCADA,text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black',)
+    canvas_camptext.create_window(200,150,window=Titulo_advertencia)
 
 
 
