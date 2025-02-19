@@ -110,7 +110,7 @@ def Scada():
     canvas_animacion.create_image(0,40,anchor=tk.NW, image=agua_tk)
     canvas_animacion.create_image(260,115,anchor=tk.NW, image=bomba_tk)
     canvas_animacion.create_image(75,-100,anchor=tk.NW, image=tubo_tk)
-    canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)
+    canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
 
 
 
