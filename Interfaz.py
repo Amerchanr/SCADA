@@ -3,6 +3,7 @@ import random
 from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
+from PIL import Image, ImageTk
 cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-04d77b3cdf.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
@@ -29,10 +30,16 @@ caja_texto_usuario = None
 caja_texto_contraseña = None
 text_area = None
 
+#funcion para cambiar el tamaño de las IMG
+def redimensionar_imagen(imagen, nuevo_ancho, nuevo_alto):
+    return imagen.resize((nuevo_ancho, nuevo_alto), Image.LANCZOS)
 
 
 
 def Scada():
+
+
+
     """Abre la ventana SCADA después del registro."""
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
@@ -67,6 +74,44 @@ def Scada():
     canvas_camptext.create_window(200,50,window=Advertencia)
     Titulo_advertencia = tk.Label(ventana_SCADA,text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black',)
     canvas_camptext.create_window(200,150,window=Titulo_advertencia)
+
+    
+ #imagenes a usar
+    Tierra= Image.open("tierra.jpg")
+    Agua= Image.open("Agua.png")
+    Bomba= Image.open("bomba.png")
+    Flecha= Image.open("Flecha.png")
+    Tanque= Image.open("tanque.png")
+    Tubo=Image.open("tubo.png")
+
+
+    # Redimensionar las imágenes
+    tierra_redimensionada = redimensionar_imagen(Tierra, 600, 400)  # Cambia las dimensiones según sea necesario
+    agua_redimensionada = redimensionar_imagen(Agua, 600, 350)
+    flecha_redimensionada = redimensionar_imagen(Flecha, 30, 50)
+    bomba_redimensionada = redimensionar_imagen(Bomba, 150, 150)
+    tanque_redimensionado = redimensionar_imagen(Tanque, 600, 400)
+    tubo_redimensionado = redimensionar_imagen(Tubo, 475, 400)
+    # Convertir las imágenes a PhotoImage para que sea complatible con tkinter
+    tierra_tk=ImageTk.PhotoImage(tierra_redimensionada)
+    agua_tk=ImageTk.PhotoImage(agua_redimensionada)
+    bomba_tk=ImageTk.PhotoImage(bomba_redimensionada)
+    flecha_tk=ImageTk.PhotoImage(flecha_redimensionada)
+    tanque_tk=ImageTk.PhotoImage(tanque_redimensionado)
+    tubo_tk=ImageTk.PhotoImage(tubo_redimensionado)
+
+    # Mantener referencias a las imágenes
+    canvas_animacion.image_refs = [tierra_tk, agua_tk, bomba_tk, flecha_tk, tanque_tk, tubo_tk]
+
+
+    #widgets camnv_animacion
+    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tierra_tk)
+    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tanque_tk)
+    canvas_animacion.create_image(0,40,anchor=tk.NW, image=agua_tk)
+    canvas_animacion.create_image(260,115,anchor=tk.NW, image=bomba_tk)
+    canvas_animacion.create_image(75,-100,anchor=tk.NW, image=tubo_tk)
+    canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)
+
 
 
 
