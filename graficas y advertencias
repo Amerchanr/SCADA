@@ -128,14 +128,14 @@ def Scada():
 #advertencias
     def advertencia_de_temperatura():
         if eje_y_grafica_temp[-1] >50:
-            Advertencia_2.config(text='¡¡¡ADVETENCIAla!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
+            Advertencia_2.config(text='¡¡¡ADVETENCIA!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
         else:
             Advertencia_2.config(text='')
         ventana.after(100,advertencia_de_temperatura)
     ventana.after(100,advertencia_de_temperatura)
     def advertencia_de_flujo():
         if (eje_y_grafica_flujo[-1]) == 0 and (eje_y_grafica_flujo[-2] == 0) and (eje_y_grafica_flujo[-3]) == 0 :
-            Advertencia.config(text='¡¡¡ADVETENCIAla!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
+            Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
         else:
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
         ventana.after(100,advertencia_de_flujo)
