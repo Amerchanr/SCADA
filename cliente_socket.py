@@ -21,10 +21,7 @@ def main():
 
     except Exception as e:
         print("Ocurrió un error: {}".format(e))
-    finally:
-        # Cerrar el socket
-        client_socket.close()
-        print("Conexión cerrada.")
+
 
 if __name__ == "__main__":
     main()
