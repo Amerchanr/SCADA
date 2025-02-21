@@ -1,13 +1,13 @@
 import tkinter as tk
+from tkinter import Tk, Frame
 import random
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
 from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
-from PIL import Image, ImageTk
-cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-04d77b3cdf.json")
+cred = credentials.Certificate("final\\personas.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
-
-
 
 ##crear una ventana principal
 ventana = tk.Tk()
@@ -24,22 +24,32 @@ fuentetitbrick=font.Font(family="Arcade Classic", size=125, weight="bold")
 fuenteusucontra=font.Font(family="Arcade Classic", size=55, weight="bold")
 fuentescada=font.Font(family="Arcade Classic", size=20,weight="bold")
 
+#configuracion de listas para para las graficas
+eje_x_grafica_temp = []
+for i in range(0,101,5):
+    eje_x_grafica_temp.append(i) # eje x
+
+eje_y_grafica_temp = [None,None,None,None,None] #eje y 
+for i in range((len(eje_x_grafica_temp)-len(eje_y_grafica_temp))):
+    eje_y_grafica_temp.append(None)
+    
+eje_x_grafica_flujo = []
+for i in range(0,101,5):
+    eje_x_grafica_flujo.append(i) # eje x
+
+eje_y_grafica_flujo = [None,None,None,None,None] #eje y 
+for i in range((len(eje_x_grafica_flujo)-len(eje_y_grafica_flujo))):
+    eje_y_grafica_flujo.append(None)
 
 # Variables globales para widgets de entrada
 caja_texto_usuario = None
 caja_texto_contraseña = None
 text_area = None
 bool=None
-#funcion para cambiar el tamaño de las IMG
-def redimensionar_imagen(imagen, nuevo_ancho, nuevo_alto):
-    return imagen.resize((nuevo_ancho, nuevo_alto), Image.LANCZOS)
 
 
 
 def Scada():
-
-
-
     """Abre la ventana SCADA después del registro."""
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
@@ -55,60 +65,6 @@ def Scada():
     canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
     canvas_graficas.place(x=0,y=400)
 
-#widgets camp text
-    Advertencia = tk.Label(ventana_SCADA,text='¡Advertencias!',font=(fuentescada,40),bg='white',fg='red',)
-    canvas_camptext.create_window(200,50,window=Advertencia)
-    Titulo_advertencia = tk.Label(ventana_SCADA,text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black',)
-    canvas_camptext.create_window(200,150,window=Titulo_advertencia)
-
-    
- #imagenes a usar
-    Tierra= Image.open("tierra.jpg")
-    Agua= Image.open("Agua.png")
-    Bomba= Image.open("bomba.png")
-    Flecha= Image.open("Flecha.png")
-    Tanque= Image.open("tanque.png")
-    Tubo=Image.open("tubo.png")
-
-
-    # Redimensionar las imágenes
-    tierra_redimensionada = redimensionar_imagen(Tierra, 600, 400)  # Cambia las dimensiones según sea necesario
-    agua_redimensionada = redimensionar_imagen(Agua, 600, 350)
-    flecha_redimensionada = redimensionar_imagen(Flecha, 30, 50)
-    bomba_redimensionada = redimensionar_imagen(Bomba, 150, 150)
-    tanque_redimensionado = redimensionar_imagen(Tanque, 600, 400)
-    tubo_redimensionado = redimensionar_imagen(Tubo, 475, 400)
-    # Convertir las imágenes a PhotoImage para que sea complatible con tkinter
-    tierra_tk=ImageTk.PhotoImage(tierra_redimensionada)
-    agua_tk=ImageTk.PhotoImage(agua_redimensionada)
-    bomba_tk=ImageTk.PhotoImage(bomba_redimensionada)
-    flecha_tk=ImageTk.PhotoImage(flecha_redimensionada)
-    tanque_tk=ImageTk.PhotoImage(tanque_redimensionado)
-    tubo_tk=ImageTk.PhotoImage(tubo_redimensionado)
-
-    # Mantener referencias a las imágenes
-    canvas_animacion.image_refs = [tierra_tk, agua_tk, bomba_tk, flecha_tk, tanque_tk, tubo_tk]
-
-
-    #widgets camnv_animacion
-    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tierra_tk)
-    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tanque_tk)
-    canvas_animacion.create_image(0,40,anchor=tk.NW, image=agua_tk)
-    canvas_animacion.create_image(260,115,anchor=tk.NW, image=bomba_tk)
-    canvas_animacion.create_image(75,-100,anchor=tk.NW, image=tubo_tk)
-    flechaid1=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
-    flechaid2=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
-    
-    def anima():
-        bool=True
-        while bool== True:
-            canvas_animacion.move(flechaid1,0,-5)
-            ventana_SCADA.after(50,anima)
-            #ventana_SCADA.after(100,flechaid)
-
-
-
-
     #Botones Scada
     boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,75,window=boton_volver)
@@ -116,18 +72,74 @@ def Scada():
     canvas_botones.create_window(150,200,window=boton_historico)
     boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,300,window=boton_Parar)
-    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=anima)
+    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,400,window=boton_Start)
     boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,525,window=boton_PaSistem)
     boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,650,window=boton_ReiSistema)
     
+    #widgets camp text
+    Titulo_advertencia = tk.Label(ventana_SCADA,text='¡Advertencias!',font=(fuentescada,40),bg='white',fg='red',)
+    canvas_camptext.create_window(200,50,window=Titulo_advertencia)
+    Advertencia = tk.Label(ventana_SCADA,text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black',)
+    canvas_camptext.create_window(200,150,window=Advertencia)
+    Advertencia_2 = tk.Label(ventana_SCADA,font=(fuentescada,15),bg='white',fg='black',text='soy la prueba de que existo')
+    canvas_camptext.create_window(200,250,window=Advertencia_2)
+
+    #graficas
+    frame_temperatura = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
+    frame_temperatura.grid(column=0,row=0, sticky='nsew')
+    def cambios_de_valores_temperatura():
+        if None in eje_y_grafica_temp:
+            eje_y_grafica_temp.remove(None)
+            eje_y_grafica_temp.append(random.randrange(0,101,1))
+        else:
+            eje_y_grafica_temp.pop(0)
+            eje_y_grafica_temp.append(random.randrange(0,101,1))
+        fig, axs = plt.subplots( dpi=80, figsize=(5,5), 
+	    sharey=True, facecolor='#00f9f844')
+        fig.suptitle('Grafica de Temperatura')
+        axs.plot(eje_x_grafica_temp, eje_y_grafica_temp, color = 'm')
+        canvas = FigureCanvasTkAgg(fig, master = frame_temperatura)  # Crea el area de dibujo en Tkinter
+        canvas.draw()
+        canvas.get_tk_widget().grid(column=0, row=0)
+        ventana.after(1000,cambios_de_valores_temperatura)
+    frame_temperatura.after(100,cambios_de_valores_temperatura)
     
-
-
-
-    
+    frame_flujo = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
+    frame_flujo.grid(column=1,row=0, sticky='nsew')
+    def cambios_de_valores_flujo():
+        if None in eje_y_grafica_flujo:
+            eje_y_grafica_flujo.remove(None)
+            eje_y_grafica_flujo.append(random.randrange(0,2))
+        else:
+            eje_y_grafica_flujo.pop(0)
+            eje_y_grafica_flujo.append(random.randrange(0,2))
+        fig, axs = plt.subplots( dpi=80, figsize=(5,5), 
+        sharey=True, facecolor='#00f9f844')
+        fig.suptitle('Grafica de Flujo')
+        axs.plot(eje_x_grafica_flujo, eje_y_grafica_flujo, color = 'm')
+        canvas = FigureCanvasTkAgg(fig, master = frame_flujo)  # Crea el area de dibujo en Tkinter
+        canvas.draw()
+        canvas.get_tk_widget().grid(column=1, row=0)
+        ventana.after(1000,cambios_de_valores_flujo)
+    frame_flujo.after(100,cambios_de_valores_flujo)
+#advertencias
+    def advertencia_de_temperatura():
+        if eje_y_grafica_temp[-1] >50:
+            Advertencia_2.config(text='¡¡¡ADVETENCIA!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
+        else:
+            Advertencia_2.config(text='')
+        ventana.after(100,advertencia_de_temperatura)
+    ventana.after(100,advertencia_de_temperatura)
+    def advertencia_de_flujo():
+        if (eje_y_grafica_flujo[-1]) == 0 and (eje_y_grafica_flujo[-2] == 0) and (eje_y_grafica_flujo[-3]) == 0 :
+            Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
+        else:
+            Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
+        ventana.after(100,advertencia_de_flujo)
+    ventana.after(100,advertencia_de_flujo)
 
 
 #funcion ventana de registro 
