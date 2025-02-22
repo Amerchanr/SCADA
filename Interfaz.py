@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
-cred = credentials.Certificate("final\\personas.json")
+from PIL import Image, ImageTk
+cred = credentials.Certificate("C:\\Users\\\Sarin\\Documents\\final\\personas.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
 ##crear una ventana principal
@@ -45,7 +46,10 @@ for i in range((len(eje_x_grafica_flujo)-len(eje_y_grafica_flujo))):
 caja_texto_usuario = None
 caja_texto_contraseña = None
 text_area = None
-bool=None
+variable_bool=None
+#funcion para cambiar el tamaño de las IMG
+def redimensionar_imagen(imagen, nuevo_ancho, nuevo_alto):
+    return imagen.resize((nuevo_ancho, nuevo_alto), Image.LANCZOS)
 
 
 
@@ -65,6 +69,50 @@ def Scada():
     canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
     canvas_graficas.place(x=0,y=400)
 
+ #imagenes a usar
+    Tierra= Image.open("Git\\pong\\SCADA\\tierra.jpg")
+    Agua= Image.open("Git\\pong\\SCADA\\Agua.png")
+    Bomba= Image.open("Git\\pong\\SCADA\\bomba.png")
+    Flecha= Image.open("Git\\pong\\SCADA\\Flecha.png")
+    Tanque= Image.open("Git\\pong\\SCADA\\tanque.png")
+    Tubo=Image.open("Git\\pong\\SCADA\\tubo.png")
+
+
+    # Redimensionar las imágenes
+    tierra_redimensionada = redimensionar_imagen(Tierra, 600, 400)  # Cambia las dimensiones según sea necesario
+    agua_redimensionada = redimensionar_imagen(Agua, 600, 350)
+    flecha_redimensionada = redimensionar_imagen(Flecha, 30, 50)
+    bomba_redimensionada = redimensionar_imagen(Bomba, 150, 150)
+    tanque_redimensionado = redimensionar_imagen(Tanque, 600, 400)
+    tubo_redimensionado = redimensionar_imagen(Tubo, 475, 400)
+    # Convertir las imágenes a PhotoImage para que sea complatible con tkinter
+    tierra_tk=ImageTk.PhotoImage(tierra_redimensionada)
+    agua_tk=ImageTk.PhotoImage(agua_redimensionada)
+    bomba_tk=ImageTk.PhotoImage(bomba_redimensionada)
+    flecha_tk=ImageTk.PhotoImage(flecha_redimensionada)
+    tanque_tk=ImageTk.PhotoImage(tanque_redimensionado)
+    tubo_tk=ImageTk.PhotoImage(tubo_redimensionado)
+
+    # Mantener referencias a las imágenes
+    canvas_animacion.image_refs = [tierra_tk, agua_tk, bomba_tk, flecha_tk, tanque_tk, tubo_tk]
+
+
+    #widgets camnv_animacion
+    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tierra_tk)
+    canvas_animacion.create_image(0,0,anchor=tk.NW, image=tanque_tk)
+    canvas_animacion.create_image(0,40,anchor=tk.NW, image=agua_tk)
+    canvas_animacion.create_image(260,115,anchor=tk.NW, image=bomba_tk)
+    canvas_animacion.create_image(75,-100,anchor=tk.NW, image=tubo_tk)
+    flechaid1=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
+    flechaid2=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
+    
+    def anima():
+        bool=True
+        while bool== True:
+            canvas_animacion.move(flechaid1,0,-5)
+            ventana_SCADA.after(50,anima)
+            #ventana_SCADA.after(100,flechaid)
+
     #Botones Scada
     boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,75,window=boton_volver)
@@ -72,7 +120,7 @@ def Scada():
     canvas_botones.create_window(150,200,window=boton_historico)
     boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,300,window=boton_Parar)
-    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=anima)
     canvas_botones.create_window(150,400,window=boton_Start)
     boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,525,window=boton_PaSistem)
@@ -140,7 +188,6 @@ def Scada():
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
         ventana.after(100,advertencia_de_flujo)
     ventana.after(100,advertencia_de_flujo)
-
 
 #funcion ventana de registro 
 
