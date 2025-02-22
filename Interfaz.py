@@ -104,23 +104,35 @@ def Scada():
     canvas_animacion.create_image(260,115,anchor=tk.NW, image=bomba_tk)
     canvas_animacion.create_image(75,-100,anchor=tk.NW, image=tubo_tk)
     flechaid1=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
-    flechaid2=canvas_animacion.create_image(300,120,anchor=tk.NW, image=flecha_tk)#posicion inicial flecha= x=300 y=120
     
+    def iniciar_animacion():
+        global variable_bool
+        variable_bool = True
+        
+    def detener_animacion():
+        global variable_bool
+        variable_bool = False
+            
     def anima():
-        bool=True
-        while bool== True:
-            canvas_animacion.move(flechaid1,0,-5)
-            ventana_SCADA.after(50,anima)
-            #ventana_SCADA.after(100,flechaid)
+        global variable_bool
+
+        if variable_bool == True:
+            canvas_animacion.move(flechaid1,0,-10)
+            if (canvas_animacion.coords(flechaid1)) == [300.0, 10.0]:
+                canvas_animacion.moveto(flechaid1,300.0, 110.0)
+        else:
+            canvas_animacion.moveto(flechaid1,300.0, 110.0)   
+        ventana_SCADA.after(100,anima)
+    ventana_SCADA.after(100,anima)
 
     #Botones Scada
     boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,75,window=boton_volver)
     boton_historico=tk.Button(ventana_SCADA,text='Historico',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,200,window=boton_historico)
-    boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
+    boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=detener_animacion,width=16)
     canvas_botones.create_window(150,300,window=boton_Parar)
-    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=anima)
+    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=iniciar_animacion)
     canvas_botones.create_window(150,400,window=boton_Start)
     boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
     canvas_botones.create_window(150,525,window=boton_PaSistem)
