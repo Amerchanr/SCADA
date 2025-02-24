@@ -7,7 +7,7 @@ from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
 from PIL import Image, ImageTk
-cred = credentials.Certificate("C:\\Users\\\Sarin\\Documents\\final\\personas.json")
+cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-1c9e81e5e9.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
 ##crear una ventana principal
@@ -70,12 +70,12 @@ def Scada():
     canvas_graficas.place(x=0,y=400)
 
  #imagenes a usar
-    Tierra= Image.open("Git\\pong\\SCADA\\tierra.jpg")
-    Agua= Image.open("Git\\pong\\SCADA\\Agua.png")
-    Bomba= Image.open("Git\\pong\\SCADA\\bomba.png")
-    Flecha= Image.open("Git\\pong\\SCADA\\Flecha.png")
-    Tanque= Image.open("Git\\pong\\SCADA\\tanque.png")
-    Tubo=Image.open("Git\\pong\\SCADA\\tubo.png")
+    Tierra= Image.open("tierra.jpg")
+    Agua= Image.open("Agua.png")
+    Bomba= Image.open("bomba.png")
+    Flecha= Image.open("Flecha.png")
+    Tanque= Image.open("tanque.png")
+    Tubo=Image.open("tubo.png")
 
 
     # Redimensionar las imágenes
