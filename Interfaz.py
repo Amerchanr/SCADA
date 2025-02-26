@@ -7,7 +7,7 @@ from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
 from PIL import Image, ImageTk
-cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-1c9e81e5e9.json")
+cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-a429e91049.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
 ##crear una ventana principal
