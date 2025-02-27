@@ -1,14 +1,30 @@
 import tkinter as tk
-from tkinter import Tk, Frame
-import random
+from tkinter import  Frame
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from tkinter import font
 import firebase_admin
 from firebase_admin import credentials, db
 from PIL import Image, ImageTk
+import time
+import threading
+import socket
+
+
 cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-a429e91049.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
+
+
+flujo_file = "flujo.txt"  
+last_line_F = ""
+running = True
+estado = "estado.txt"  
+last_line_E = ""
+temperatura_file = "temperatura.txt"  
+last_line_T = ""
+nivel_file='nivel.txt'
+last_line_N=''
+
 
 ##crear una ventana principal
 ventana = tk.Tk()
@@ -34,13 +50,13 @@ eje_y_grafica_temp = [None,None,None,None,None] #eje y
 for i in range((len(eje_x_grafica_temp)-len(eje_y_grafica_temp))):
     eje_y_grafica_temp.append(None)
     
-eje_x_grafica_flujo = []
+eje_x_grafica_nivel = []
 for i in range(0,101,5):
-    eje_x_grafica_flujo.append(i) # eje x
+    eje_x_grafica_nivel.append(i) # eje x
 
-eje_y_grafica_flujo = [None,None,None,None,None] #eje y 
-for i in range((len(eje_x_grafica_flujo)-len(eje_y_grafica_flujo))):
-    eje_y_grafica_flujo.append(None)
+eje_y_grafica_nivel = [None,None,None,None,None] #eje y 
+for i in range((len(eje_x_grafica_nivel)-len(eje_y_grafica_nivel))):
+    eje_y_grafica_nivel.append(None)
 
 # Variables globales para widgets de entrada
 caja_texto_usuario = None
@@ -51,9 +67,44 @@ variable_bool=None
 def redimensionar_imagen(imagen, nuevo_ancho, nuevo_alto):
     return imagen.resize((nuevo_ancho, nuevo_alto), Image.LANCZOS)
 
-
-
 def Scada():
+    #hilo_conect = threading.Thread(target=conexion)
+    #hilo_conect.start()
+
+    def read_file_nivel():
+        global last_line_N, running
+        while running:
+            try:
+                with open(nivel_file, 'r') as file:
+                    lines = file.readlines()
+                    if lines:
+                        last_line_N = float(lines[-1].strip())  # Leer la última línea
+                        
+            except Exception as e:
+                print(f"Error al leer el archivo: {e}")
+            time.sleep(1)  # Esperar 1 segundo antes de volver a leer
+            
+    def read_file_temp():
+        global last_line_T, running
+        while running:
+            try:
+                with open(flujo_file, 'r') as file:
+                    lines = file.readlines()
+                    if lines:
+                        last_line_T= float(lines[-1].strip())  # Leer la última línea
+                        
+            except Exception as e:
+                print(f"Error al leer el archivo: {e}")
+            time.sleep(1)  # Esperar 1 segundo antes de volver a leer
+        
+    # Iniciar el hilo para leer el archivo
+    
+    temphilo=threading.Thread(target=read_file_temp)
+    temphilo.start()
+    nivelhilo=threading.Thread(target=read_file_nivel)
+    nivelhilo.start()
+    
+    
     """Abre la ventana SCADA después del registro."""
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
@@ -69,7 +120,7 @@ def Scada():
     canvas_graficas =tk.Canvas(ventana_SCADA,width=970,height=400,bg='lightblue') 
     canvas_graficas.place(x=0,y=400)
 
- #imagenes a usar
+    #imagenes a usar
     Tierra= Image.open("tierra.jpg")
     Agua= Image.open("Agua.png")
     Bomba= Image.open("bomba.png")
@@ -153,11 +204,11 @@ def Scada():
     def cambios_de_valores_temperatura():
         if None in eje_y_grafica_temp:
             eje_y_grafica_temp.remove(None)
-            eje_y_grafica_temp.append(random.randrange(0,101,1))
+            eje_y_grafica_temp.append(last_line_T)
         else:
             eje_y_grafica_temp.pop(0)
-            eje_y_grafica_temp.append(random.randrange(0,101,1))
-        fig, axs = plt.subplots( dpi=80, figsize=(5,5), 
+            eje_y_grafica_temp.append(last_line_T)
+        fig, axs = plt.subplots( dpi=80, figsize=(5,4), 
 	    sharey=True, facecolor='#00f9f844')
         fig.suptitle('Grafica de Temperatura')
         axs.plot(eje_x_grafica_temp, eje_y_grafica_temp, color = 'm')
@@ -167,24 +218,24 @@ def Scada():
         ventana.after(1000,cambios_de_valores_temperatura)
     frame_temperatura.after(100,cambios_de_valores_temperatura)
     
-    frame_flujo = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
-    frame_flujo.grid(column=1,row=0, sticky='nsew')
-    def cambios_de_valores_flujo():
-        if None in eje_y_grafica_flujo:
-            eje_y_grafica_flujo.remove(None)
-            eje_y_grafica_flujo.append(random.randrange(0,2))
+    frame_nivel = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
+    frame_nivel.grid(column=1,row=0, sticky='nsew')
+    def cambios_de_valores_nivel():
+        if None in eje_y_grafica_nivel:
+            eje_y_grafica_nivel.remove(None)
+            eje_y_grafica_nivel.append(last_line_N)
         else:
-            eje_y_grafica_flujo.pop(0)
-            eje_y_grafica_flujo.append(random.randrange(0,2))
-        fig, axs = plt.subplots( dpi=80, figsize=(5,5), 
+            eje_y_grafica_nivel.pop(0)
+            eje_y_grafica_nivel.append(last_line_N)
+        fig, axs = plt.subplots( dpi=80, figsize=(5,4), 
         sharey=True, facecolor='#00f9f844')
-        fig.suptitle('Grafica de Flujo')
-        axs.plot(eje_x_grafica_flujo, eje_y_grafica_flujo, color = 'm')
-        canvas = FigureCanvasTkAgg(fig, master = frame_flujo)  # Crea el area de dibujo en Tkinter
+        fig.suptitle('Grafica de Nivel del Agua')
+        axs.plot(eje_x_grafica_nivel, eje_y_grafica_nivel, color = 'm')
+        canvas = FigureCanvasTkAgg(fig, master = frame_nivel)  # Crea el area de dibujo en Tkinter
         canvas.draw()
         canvas.get_tk_widget().grid(column=1, row=0)
-        ventana.after(1000,cambios_de_valores_flujo)
-    frame_flujo.after(100,cambios_de_valores_flujo)
+        ventana.after(1000,cambios_de_valores_nivel)
+    frame_nivel.after(100,cambios_de_valores_nivel)
 #advertencias
     def advertencia_de_temperatura():
         if eje_y_grafica_temp[-1] >50:
@@ -194,15 +245,15 @@ def Scada():
         ventana.after(100,advertencia_de_temperatura)
     ventana.after(100,advertencia_de_temperatura)
     def advertencia_de_flujo():
-        if (eje_y_grafica_flujo[-1]) == 0 and (eje_y_grafica_flujo[-2] == 0) and (eje_y_grafica_flujo[-3]) == 0 :
+        if (eje_y_grafica_nivel[-1]) == 0 and (eje_y_grafica_nivel[-2] == 0) and (eje_y_grafica_nivel[-3]) == 0 :
             Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
         else:
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
         ventana.after(100,advertencia_de_flujo)
     ventana.after(100,advertencia_de_flujo)
 
-#funcion ventana de registro 
 
+#funcion ventana de registro 
 def registro():
     ventana_registro=tk.Toplevel(ventana)
     ventana_registro.attributes('-fullscreen',1)

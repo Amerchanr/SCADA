@@ -1,7 +1,7 @@
 import socket
 
 # Configuración del cliente
-ESP32_IP = "192.168.206.8"  # Dirección IP del ESP32
+ESP32_IP = "192.168.178.8"  # Dirección IP del ESP32
 PORT = 12345
 
 # Conectar con el servidor (ESP32)
@@ -35,7 +35,7 @@ try:
             with open("nivel.txt", "a") as nivel_file:
                 nivel_file.write(f"{nivel}\n")
 
-            with open("estado_bomba.txt", "a") as estado_file:
+            with open("estado.txt", "a") as estado_file:
                 estado_file.write(f"{estado_rele}\n")
 
 except KeyboardInterrupt:
