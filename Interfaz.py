@@ -11,18 +11,18 @@ import threading
 import socket
 
 
-cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-a429e91049.json")
+cred = credentials.Certificate("C:\\Users\\Sarin\\Documents\\final\\personas.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
 
-flujo_file = "flujo.txt"  
+flujo_file = "Git\\SCADA\\flujo.txt"  
 last_line_F = ""
 running = True
-estado = "estado.txt"  
+estado = "Git\\SCADA\\estado.txt"  
 last_line_E = ""
-temperatura_file = "temperatura.txt"  
+temperatura_file = "Git\\SCADA\\temperatura.txt"  
 last_line_T = ""
-nivel_file='nivel.txt'
+nivel_file='Git\\SCADA\\nivel.txt'
 last_line_N=''
 
 
@@ -43,7 +43,7 @@ fuentescada=font.Font(family="Arcade Classic", size=20,weight="bold")
 
 #configuracion de listas para para las graficas
 eje_x_grafica_temp = []
-for i in range(0,101,5):
+for i in range(0,11):
     eje_x_grafica_temp.append(i) # eje x
 
 eje_y_grafica_temp = [None,None,None,None,None] #eje y 
@@ -51,7 +51,7 @@ for i in range((len(eje_x_grafica_temp)-len(eje_y_grafica_temp))):
     eje_y_grafica_temp.append(None)
     
 eje_x_grafica_nivel = []
-for i in range(0,101,5):
+for i in range(0,11):
     eje_x_grafica_nivel.append(i) # eje x
 
 eje_y_grafica_nivel = [None,None,None,None,None] #eje y 
@@ -154,12 +154,12 @@ def Scada():
     canvas_graficas.place(x=0,y=400)
 
     #imagenes a usar
-    Tierra= Image.open("tierra.jpg")
-    Agua= Image.open("Agua.png")
-    Bomba= Image.open("bomba.png")
-    Flecha= Image.open("Flecha.png")
-    Tanque= Image.open("tanque.png")
-    Tubo=Image.open("tubo.png")
+    Tierra= Image.open("Git\\SCADA\\tierra.jpg")
+    Agua= Image.open("Git\\SCADA\\Agua.png")
+    Bomba= Image.open("Git\\SCADA\\bomba.png")
+    Flecha= Image.open("Git\\SCADA\\Flecha.png")
+    Tanque= Image.open("Git\\SCADA\\tanque.png")
+    Tubo=Image.open("Git\\SCADA\\tubo.png")
 
 
     # Redimensionar las imágenes
@@ -235,20 +235,22 @@ def Scada():
     frame_temperatura = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
     frame_temperatura.grid(column=0,row=0, sticky='nsew')
     def cambios_de_valores_temperatura():
+        plt.cla()
         if None in eje_y_grafica_temp:
             eje_y_grafica_temp.remove(None)
             eje_y_grafica_temp.append(last_line_T)
         else:
             eje_y_grafica_temp.pop(0)
             eje_y_grafica_temp.append(last_line_T)
-        fig, axs = plt.subplots( dpi=80, figsize=(5,4), 
+        figura, axs = plt.subplots( dpi=80, figsize=(5,4), 
 	    sharey=True, facecolor='#00f9f844')
-        fig.suptitle('Grafica de Temperatura')
+        figura.suptitle('Grafica de Temperatura')
         axs.plot(eje_x_grafica_temp, eje_y_grafica_temp, color = 'm')
-        canvas = FigureCanvasTkAgg(fig, master = frame_temperatura)  # Crea el area de dibujo en Tkinter
+        canvas = FigureCanvasTkAgg(figura, master = frame_temperatura)  # Crea el area de dibujo en Tkinter
         canvas.draw()
         canvas.get_tk_widget().grid(column=0, row=0)
         ventana.after(1000,cambios_de_valores_temperatura)
+        plt.close(figura)
     frame_temperatura.after(100,cambios_de_valores_temperatura)
     
     frame_nivel = Frame(canvas_graficas,  bg='blue',pady=20,padx=20)
@@ -260,14 +262,15 @@ def Scada():
         else:
             eje_y_grafica_nivel.pop(0)
             eje_y_grafica_nivel.append(last_line_N)
-        fig, axs = plt.subplots( dpi=80, figsize=(5,4), 
+        figura, axs = plt.subplots( dpi=80, figsize=(5,4), 
         sharey=True, facecolor='#00f9f844')
-        fig.suptitle('Grafica de Nivel del Agua')
+        figura.suptitle('Grafica de Nivel del Agua')
         axs.plot(eje_x_grafica_nivel, eje_y_grafica_nivel, color = 'm')
-        canvas = FigureCanvasTkAgg(fig, master = frame_nivel)  # Crea el area de dibujo en Tkinter
+        canvas = FigureCanvasTkAgg(figura, master = frame_nivel)  # Crea el area de dibujo en Tkinter
         canvas.draw()
         canvas.get_tk_widget().grid(column=1, row=0)
         ventana.after(1000,cambios_de_valores_nivel)
+        plt.close(figura)
     frame_nivel.after(100,cambios_de_valores_nivel)
 #advertencias
     def advertencia_de_temperatura():
