@@ -84,6 +84,7 @@ def Scada():
                 print(f"Error al leer el archivo: {e}")
             time.sleep(1)  # Esperar 1 segundo antes de volver a leer
             
+    
     def read_file_temp():
         global last_line_T, running
         while running:
@@ -96,14 +97,46 @@ def Scada():
             except Exception as e:
                 print(f"Error al leer el archivo: {e}")
             time.sleep(1)  # Esperar 1 segundo antes de volver a leer
-        
+
+    def read_file_flujo():
+        global last_line_F, running
+        while running:
+            try:
+                with open(flujo_file, 'r') as file:
+                    lines = file.readlines()
+                    if lines:
+                        last_line_F= float(lines[-1].strip())  # Leer la última línea
+                                
+            except Exception as e:
+                print(f"Error al leer el archivo: {e}")
+            time.sleep(1)  # Esperar 1 segundo antes de volver a leer
+    def read_file_estado():
+        global last_line_E, running
+        while running:
+            try:
+                with open(estado, 'r') as file:
+                    lines = file.readlines()
+                    if lines:
+                        last_line_E= lines[-1].strip()  # Leer la última línea
+                                
+            except Exception as e:
+                print(f"Error al leer el archivo: {e}")
+            time.sleep(1)  # Esperar 1 segundo antes de volver a leer
+
+
+
+
     # Iniciar el hilo para leer el archivo
     
     temphilo=threading.Thread(target=read_file_temp)
     temphilo.start()
     nivelhilo=threading.Thread(target=read_file_nivel)
     nivelhilo.start()
-    
+    estadohilo=threading.Thread(target=read_file_estado)
+    estadohilo.start()
+    flujohilo=threading.Thread(target=read_file_flujo)
+    flujohilo.start()
+
     
     """Abre la ventana SCADA después del registro."""
     ventana_SCADA = tk.Toplevel(ventana)
@@ -238,14 +271,14 @@ def Scada():
     frame_nivel.after(100,cambios_de_valores_nivel)
 #advertencias
     def advertencia_de_temperatura():
-        if eje_y_grafica_temp[-1] >50:
+        if last_line_T >26:
             Advertencia_2.config(text='¡¡¡ADVETENCIA!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
         else:
             Advertencia_2.config(text='')
         ventana.after(100,advertencia_de_temperatura)
     ventana.after(100,advertencia_de_temperatura)
     def advertencia_de_flujo():
-        if (eje_y_grafica_nivel[-1]) == 0 and (eje_y_grafica_nivel[-2] == 0) and (eje_y_grafica_nivel[-3]) == 0 :
+        if (last_line_E=='Encendido') and last_line_F==0:
             Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
         else:
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
