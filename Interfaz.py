@@ -8,22 +8,27 @@ from firebase_admin import credentials, db
 from PIL import Image, ImageTk
 import time
 import threading
-import socket
+from tkinter import scrolledtext
 
 
-cred = credentials.Certificate("C:\\Users\\Sarin\\Documents\\final\\personas.json")
+
+cred = credentials.Certificate("usuarios-47379-firebase-adminsdk-fbsvc-a429e91049.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://usuarios-47379-default-rtdb.firebaseio.com/"})
 
 
-flujo_file = "Git\\SCADA\\flujo.txt"  
-last_line_F = ""
 running = True
-estado = "Git\\SCADA\\estado.txt"  
+flujo_file = "flujo.txt"  
+last_line_F = ""
+flujo_line=''
+estado = "estado.txt"  
 last_line_E = ""
-temperatura_file = "Git\\SCADA\\temperatura.txt"  
+estado_line=''
+temperatura_file = "temperatura.txt"  
 last_line_T = ""
-nivel_file='Git\\SCADA\\nivel.txt'
+temp_line=''
+nivel_file='nivel.txt'
 last_line_N=''
+nivel_line=''
 
 
 ##crear una ventana principal
@@ -67,9 +72,58 @@ variable_bool=None
 def redimensionar_imagen(imagen, nuevo_ancho, nuevo_alto):
     return imagen.resize((nuevo_ancho, nuevo_alto), Image.LANCZOS)
 
+
+
+
+
 def Scada():
-    #hilo_conect = threading.Thread(target=conexion)
-    #hilo_conect.start()
+    
+    def historico():
+        cerrar()
+        ventana_historico=tk.Toplevel(ventana)
+        ventana_historico.attributes('-fullscreen',1)
+        ventana_historico.config(bg='white')
+        LDAtos= tk.Label(ventana_historico,text='Datos historicos de sensores',font=(fuenteusucontra),bg='white',fg='black')
+        LDAtos.place(x=150,y=35)
+        boton_volver=tk.Button(ventana_historico,text='volver',font=(fuentebotonesventanas),bg='#000000',fg='white',relief='raised',command=ventana_historico.destroy)
+        boton_volver.place(x=1180,y=20)
+        canvas_camptext_histo =tk.Canvas(ventana_historico,width=500,height=500,bg='white') 
+        canvas_camptext_histo.place(x=450,y=200)
+        histo_area = scrolledtext.ScrolledText(ventana_historico, width=60, height=18)
+        histo_area.pack()
+        canvas_camptext_histo.create_window(250,250, window=histo_area)
+        
+        def lectura_estado():
+            global estado_line
+            with open(estado, 'r')as f:
+                for i in f:
+                    estado_line=i
+        def lectura_flujo():
+            with open(flujo_file, 'r')as f:
+                global flujo_line
+                for i in f:
+                    flujo_line=i
+        def lectura_nivel():
+            global nivel_line
+            a=0
+            with open(nivel_file, 'r')as f:
+                for i in f:
+                    a+=1
+                    nivel_line=i
+                    histo_area.insert(tk.END,f'Datos Registrados: {a}Temp={temp_line} /// Flujo={flujo_line} /// Nivel={nivel_line} /// Estado={estado_line}\n')
+        def lectura_temp():
+            with open(temperatura_file, 'r')as f:
+                global temp_line
+                for i in f:
+                    temp_line=i
+        Lectemphilo=threading.Thread(target=lectura_temp)
+        Lectemphilo.start()
+        Lec_Est_hilo=threading.Thread(target=lectura_estado)
+        Lec_Est_hilo.start()
+        Lec_Flujo_hilo=threading.Thread(target=lectura_flujo)
+        Lec_Flujo_hilo.start()
+        Lec_Nivel_hilo=threading.Thread(target=lectura_nivel)
+        Lec_Nivel_hilo.start()    
 
     def read_file_nivel():
         global last_line_N, running
@@ -78,8 +132,7 @@ def Scada():
                 with open(nivel_file, 'r') as file:
                     lines = file.readlines()
                     if lines:
-                        last_line_N = float(lines[-1].strip())  # Leer la última línea
-                        
+                        last_line_N = float(lines[-1].strip())  # Leer la última línea                
             except Exception as e:
                 print(f"Error al leer el archivo: {e}")
             time.sleep(1)  # Esperar 1 segundo antes de volver a leer
@@ -89,10 +142,11 @@ def Scada():
         global last_line_T, running
         while running:
             try:
-                with open(flujo_file, 'r') as file:
+                with open(temperatura_file, 'r') as file:
                     lines = file.readlines()
                     if lines:
-                        last_line_T= float(lines[-1].strip())  # Leer la última línea
+                        last_line_T= int(lines[-1].strip())  # Leer la última línea
+                        
                         
             except Exception as e:
                 print(f"Error al leer el archivo: {e}")
@@ -123,7 +177,10 @@ def Scada():
                 print(f"Error al leer el archivo: {e}")
             time.sleep(1)  # Esperar 1 segundo antes de volver a leer
 
-
+    def cerrar():
+        global running
+        running = False  # Detener el hilo
+        ventana_SCADA.destroy()  # Cerrar la ventana
 
 
     # Iniciar el hilo para leer el archivo
@@ -142,7 +199,20 @@ def Scada():
     ventana_SCADA = tk.Toplevel(ventana)
     ventana_SCADA.attributes('-fullscreen', 1)
     ventana_SCADA.config(bg='white')
-    
+
+
+    def Parar():
+        with open('abrir_parar.txt', 'w') as f:
+        # Escribir datos en el archivo
+            f.write("0")
+    def Start():
+        with open('abrir_parar.txt', 'w') as f:
+        # Escribir datos en el archivo
+            f.write("1")
+
+
+
+
     # Crear el Canvas
     canvas_botones = tk.Canvas(ventana_SCADA, width=300, height=800, bg="white")
     canvas_botones.place(x=975,y=0)
@@ -154,13 +224,12 @@ def Scada():
     canvas_graficas.place(x=0,y=400)
 
     #imagenes a usar
-    Tierra= Image.open("Git\\SCADA\\tierra.jpg")
-    Agua= Image.open("Git\\SCADA\\Agua.png")
-    Bomba= Image.open("Git\\SCADA\\bomba.png")
-    Flecha= Image.open("Git\\SCADA\\Flecha.png")
-    Tanque= Image.open("Git\\SCADA\\tanque.png")
-    Tubo=Image.open("Git\\SCADA\\tubo.png")
-
+    Tierra= Image.open("tierra.jpg")
+    Agua= Image.open("Agua.png")
+    Bomba= Image.open("bomba.png")
+    Flecha= Image.open("Flecha.png")
+    Tanque= Image.open("tanque.png")
+    Tubo=Image.open("tubo.png")
 
     # Redimensionar las imágenes
     tierra_redimensionada = redimensionar_imagen(Tierra, 600, 400)  # Cambia las dimensiones según sea necesario
@@ -208,20 +277,26 @@ def Scada():
             canvas_animacion.moveto(flechaid1,300.0, 110.0)   
         ventana_SCADA.after(100,anima)
     ventana_SCADA.after(100,anima)
-
+    def animacion():
+        global last_line_E
+        if (last_line_E=='Encendido'):
+            ventana_SCADA.after(100,iniciar_animacion)
+        else:
+            ventana_SCADA.after(100,detener_animacion)
+        ventana_SCADA.after(100,animacion)
+        
+    ventana_SCADA.after(100,animacion)
+    
     #Botones Scada
-    boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
-    canvas_botones.create_window(150,75,window=boton_volver)
-    boton_historico=tk.Button(ventana_SCADA,text='Historico',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
-    canvas_botones.create_window(150,200,window=boton_historico)
-    boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=detener_animacion,width=16)
-    canvas_botones.create_window(150,300,window=boton_Parar)
-    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=iniciar_animacion)
-    canvas_botones.create_window(150,400,window=boton_Start)
-    boton_PaSistem=tk.Button(ventana_SCADA,text='Parar Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
-    canvas_botones.create_window(150,525,window=boton_PaSistem)
-    boton_ReiSistema=tk.Button(ventana_SCADA,text='Reinicio de Sistema',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=ventana_SCADA.destroy,width=16)
-    canvas_botones.create_window(150,650,window=boton_ReiSistema)
+    boton_volver=tk.Button(ventana_SCADA,text='volver',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=cerrar,width=16)
+    canvas_botones.create_window(150,100,window=boton_volver)
+    boton_historico=tk.Button(ventana_SCADA,text='Historico',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=historico,width=16)
+    canvas_botones.create_window(150,250,window=boton_historico)
+    boton_Parar=tk.Button(ventana_SCADA,text='Parar Bomba',font=(fuentescada),bg='#000000',fg='white',relief='raised',command=Parar,width=16)
+    canvas_botones.create_window(150,400,window=boton_Parar)
+    boton_Start=tk.Button(ventana_SCADA,text='Bomba Start',font=(fuentescada),bg='#000000',fg='white',relief='raised',width=16,command=Start)
+    canvas_botones.create_window(150,550,window=boton_Start)
+    
     
     #widgets camp text
     Titulo_advertencia = tk.Label(ventana_SCADA,text='¡Advertencias!',font=(fuentescada,40),bg='white',fg='red',)
@@ -274,14 +349,14 @@ def Scada():
     frame_nivel.after(100,cambios_de_valores_nivel)
 #advertencias
     def advertencia_de_temperatura():
-        if last_line_T >26:
+        if (last_line_T >25):
             Advertencia_2.config(text='¡¡¡ADVETENCIA!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
         else:
             Advertencia_2.config(text='')
         ventana.after(100,advertencia_de_temperatura)
     ventana.after(100,advertencia_de_temperatura)
     def advertencia_de_flujo():
-        if (last_line_E=='Encendido') and last_line_F==0:
+        if ((last_line_N<10) and (last_line_F==0)):
             Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
         else:
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
@@ -325,9 +400,11 @@ def registro():
             text_area.insert(tk.END,f'Hola {name}, Bienvenido desde la siguiente pestaña podrá observar lo referente a su sistema de alcantalillado')
             ventana_registro.after(100000,destruir_regist)
             Scada()
-                      
     boton_registro=tk.Button(ventana_registro,text='registrarse',font=(fuentebotones),bg='#000000',fg='white',relief='raised',command=dataregist)
     boton_registro.place(x=500,y=600)
+
+
+                
 
 def inicio_sesion():
     ventana_inicio=tk.Toplevel(ventana)

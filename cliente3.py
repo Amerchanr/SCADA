@@ -12,7 +12,13 @@ print("Conectado al ESP32")
 
 try:
     while True:
-        # Recibir datos
+        # Leer el comando desde el archivo
+        with open('abrir_parar.txt', 'r') as est_file:
+            onoff = est_file.readline().strip()  # Leer contenido y eliminar espacios innecesarios
+            client_socket.sendall(onoff.encode())  # Enviar el comando al ESP32
+            
+        
+        # Recibir datos del ESP32
         data = client_socket.recv(1024).decode().strip()
         
         if not data:
@@ -20,7 +26,7 @@ try:
 
         print(f"Datos recibidos: {data}")
 
-        # Separar los valores
+        # Separar los valores recibidos
         valores = data.split(",")
         if len(valores) == 4:
             temperatura, flujo, nivel, estado_rele = valores
@@ -37,7 +43,7 @@ try:
 
             with open("estado.txt", "a") as estado_file:
                 estado_file.write(f"{estado_rele}\n")
-
+            
 except KeyboardInterrupt:
     print("Conexión cerrada por el usuario.")
 
