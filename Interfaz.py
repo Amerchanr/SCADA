@@ -349,14 +349,14 @@ def Scada():
     frame_nivel.after(100,cambios_de_valores_nivel)
 #advertencias
     def advertencia_de_temperatura():
-        if (last_line_T >25):
+        if (last_line_T >27):
             Advertencia_2.config(text='¡¡¡ADVETENCIA!!!\n La temperatura  actual\nsobrepasa la temperatura\noptima',fg='red')
         else:
             Advertencia_2.config(text='')
         ventana.after(100,advertencia_de_temperatura)
     ventana.after(100,advertencia_de_temperatura)
     def advertencia_de_flujo():
-        if ((last_line_N<10) and (last_line_F==0)):
+        if ((last_line_N<10) and (last_line_F==1)):
             Advertencia.config(text='¡¡¡ADVETENCIA!!!\n El flujo de agua actual\nes menor al flujo\noptimo recomendado',fg='red')
         else:
             Advertencia.config(text='aqui se presentaran las\nadvertencias presentadas por el \nsistema',font=(fuentescada,15),bg='white',fg='black')
@@ -437,11 +437,7 @@ def inicio_sesion():
         if (contr_usua== texto_contraseña):
 
              text_area.insert(tk.END,f'Hola {name}, Bienvenido desde la siguiente pestaña podrá observar lo referente a su sistema de alcantalillado')
-             def destruir_inicio():
-                  ventana_inicio.destroy
-             #ventana_inicio.after(5000,destruir_inicio)
-             #ventana_inicio.destroy
-             #destruir_inicio()
+             
              Scada()
         else:
              text_area.insert(tk.END,f'Hola {name}, el usuario o la contraseñaa estan incorrectos')
