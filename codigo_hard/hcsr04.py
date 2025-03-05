@@ -1,10 +1,3 @@
-# platform: micropython-esp32
-# send: wifi
-# ip_mpy: 192.168.183.8
-# serialport: 
-# import usocket as socket
-# filename: hcsr04.py
-
 import machine, time
 from machine import Pin
 
